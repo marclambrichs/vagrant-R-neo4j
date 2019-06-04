@@ -1,0 +1,14 @@
+---
+version: 5
+
+defaults:
+  datadir: hieradata
+
+hierarchy:
+  - name: "Normal data"
+    data_hash: yaml_data
+    paths:
+      - "nodes/%{::trusted.certname}.yaml"
+      - "applications/%{::application}.yaml"
+      - "environment/%{::environment}.yaml"
+      - "common.yaml"

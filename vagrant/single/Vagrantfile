@@ -1,0 +1,117 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'yaml'
+if File.file?('vagrant.yaml')
+  vagrant_config = YAML.load_file('vagrant.yaml')
+else
+  raise "No vagrant config is provided"
+end
+
+Vagrant.configure("2") do |config|
+  ###############0##############################################################
+  # Plugin management
+  ##############################################################################
+  if vagrant_config['required_plugins']
+    plugins = vagrant_config['required_plugins']
+  else
+    plugins = ['vagrant-hostmanager']
+  end
+  plugins.each do |plugin|
+    unless Vagrant.has_plugin?(plugin)
+      raise plugin << " has not been installed."
+    end
+  end
+  
+  ###############0##############################################################
+  # Plugin settings
+  ##############################################################################
+  if Vagrant.has_plugin?('vagrant-cachier')
+    config.cache.scope = :machine
+  end
+  
+  if Vagrant.has_plugin?('vagrant-hostmanager')
+    config.hostmanager.enabled           = true
+    config.hostmanager.manage_host       = true
+    config.hostmanager.ignore_private_ip = false
+    config.hostmanager.include_offline   = true
+  end
+  
+  ###############0##############################################################
+  # Puppet settings
+  ##############################################################################
+  if vagrant_config['puppet_environment']
+    env = vagrant_config['puppet_environment']
+  else
+    env = 'production'
+  end
+
+  if vagrant_config['puppet_version']
+    version = vagrant_config['puppet_version']
+  else
+    version = 'latest'
+  end
+  
+  if Vagrant.has_plugin?('vagrant-puppet-install')
+    config.puppet_install.puppet_version = version
+  end
+  
+  ###############0##############################################################
+  # Virtualbox(es)
+  ##############################################################################
+  config.vm.box_check_update = false
+  config.ssh.insert_key      = false
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  #-----------------------------------------------------------------------------
+  # -- VM definitions
+  #-----------------------------------------------------------------------------
+  if vagrant_config['nodes']
+    vagrant_config['nodes'].each do |node|
+      name               = node['name']
+
+      config.vm.define node['name'] do |srv|
+        srv.vm.box      = node['box']
+        srv.vm.hostname = "#{name}.#{env}.vagrant"
+    
+        srv.vm.network :private_network, ip: node['ip']
+        if node['ports']
+          node['ports'].each do |port|
+            srv.vm.network :forwarded_port, guest: port['guest'], host: port['host']
+          end
+        end
+        if node['aliases']
+          srv.hostmanager.aliases = node['aliases']
+        end
+        
+        srv.vm.provider :virtualbox do |vb|
+          vb.name             = node['name']
+          vb.cpus             = node['cpus']
+          vb.memory           = node['memory']
+          # because of the vulnerability in the default e1000 nic
+          vb.default_nic_type = "82543GC"
+          vb.customize [
+           'modifyvm', :id,
+           '--groups', node['groups']
+          ]
+        end
+    
+        if node['synced_folders']
+          node['synced_folders'].each do |folder|
+            config.vm.synced_folder folder['src'], folder['dst']
+          end
+        end
+    
+        #-----------------------------------------------------------------------------
+        # -- Puppet provisioning
+        #-----------------------------------------------------------------------------
+        srv.vm.provision :puppet do |puppet|
+          puppet.options           = "--debug --verbose"
+          puppet.environment_path  = "../.."
+          puppet.environment       = "#{env}"
+          puppet.hiera_config_path = "../../puppet/hiera.yaml"
+        end    
+      end
+    end
+  end
+end

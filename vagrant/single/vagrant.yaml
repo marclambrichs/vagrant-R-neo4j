@@ -1,0 +1,20 @@
+---
+nodes:
+  - name: neo4j
+    groups: '/Atradius/test'
+    box: bento/centos-7.6
+    cpus: 2
+    ip: 172.16.32.48
+    memory: 4096
+    ports:
+      - guest: 7474
+        host: 7474
+      - guest: 7473
+        host: 7473
+      - guest: 9000
+        host: 9000
+    synced_folders:
+      - src: '../../R'
+        dst: '/home/vagrant/R'
+puppet_environment: 'single'
+puppet_version: '5.5.12'

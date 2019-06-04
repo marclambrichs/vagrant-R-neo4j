@@ -1,0 +1,12 @@
+*~
+*.swp
+.vagrant
+.DS_Store
+
+## EMACS
+*~
+\#*
+.\#*
+
+Gemfile.lock
+

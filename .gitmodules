@@ -1,0 +1,30 @@
+[submodule "puppet/modules/roles"]
+	path = puppet/modules/roles
+	url = git@github.com:attachmentgenie/attachmentgenie-roles.git
+[submodule "puppet/modules/profiles"]
+	path = puppet/modules/profiles
+	url = git@github.com:marclambrichs/attachmentgenie-profiles.git
+[submodule "puppet/modules/stdlib"]
+	path = puppet/modules/stdlib
+	url = git@github.com:puppetlabs/puppetlabs-stdlib.git
+[submodule "puppet/modules/concat"]
+	path = puppet/modules/concat
+	url = git@github.com:puppetlabs/puppetlabs-concat.git
+[submodule "puppet/modules/ntp"]
+	path = puppet/modules/ntp
+	url = git@github.com:puppetlabs/puppetlabs-ntp.git
+[submodule "puppet/modules/archive"]
+	path = puppet/modules/archive
+	url = git@github.com:voxpupuli/puppet-archive.git
+[submodule "puppet/modules/neo4j"]
+	path = puppet/modules/neo4j
+	url = git@github.com:marclambrichs/puppet-neo4j.git
+[submodule "puppet/modules/r"]
+	path = puppet/modules/r
+	url = https://github.com/marclambrichs/puppet-r.git
+[submodule "puppet/modules/epel"]
+	path = puppet/modules/epel
+	url = git@github.com:stahnma/puppet-module-epel.git
+[submodule "puppet/modules/translate"]
+	path = puppet/modules/translate
+	url = git@github.com:puppetlabs/puppetlabs-translate.git

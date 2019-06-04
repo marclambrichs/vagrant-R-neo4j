@@ -1,0 +1,16 @@
+---
+classes:
+  - roles::database
+
+profiles::bootstrap::repos: true
+profiles::bootstrap::repositories::epel: true
+profiles::database::neo4j: true
+profiles::database::neo4j::manage_repo: true
+profiles::java::package: 'openjdk-8-jdk'
+profiles::runtime::r: true
+profiles::runtime::r::packages:
+  - 'neo4r'
+neo4j::group: 'users'
+neo4j::dbms_mode: 'SINGLE'
+neo4j::release_deb: 'testing/'
+
